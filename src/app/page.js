@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Wallet from "../components/Wallet";
 import Dropdown from "../components/Dropdown";
 import Image from "next/image";
@@ -11,11 +11,26 @@ export default function Home() {
   const [account, setAccount] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
+  const [message, setMessage] = useState("");
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
   const openDropdown = () => setIsDropdownOpen(true);
   const closeDropdown = () => setIsDropdownOpen(false);
+
+  useEffect(() => {
+    const fetchMessage = async () => {
+      try {
+        const response = await fetch("/api/auth");
+        const data = await response.json();
+        setMessage(data.message);
+      } catch (error) {
+        console.error("Error fetching sign message:", error);
+      }
+    };
+
+    fetchMessage();
+  }, []);
 
   const disconnectWallet = async () => {
     setProvider(null);
@@ -30,14 +45,6 @@ export default function Home() {
     }
 
     const signer = await provider.getSigner();
-    const timestamp = Math.floor(Date.now() / 1000);
-    const message = `
-      Hey, this is a test for signing :)
-      
-      Address: ${account.address}
-      Timestamp: ${timestamp}
-      
-    `;
 
     try {
       const signature = await signer.signMessage(message);

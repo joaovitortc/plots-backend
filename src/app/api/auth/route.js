@@ -60,3 +60,14 @@ export const POST = async (req, res) => {
     await client.close();
   }
 };
+
+export const GET = async (req, res) => {
+  const timestamp = Math.floor(Date.now() / 1000);
+  const message = `
+    Hey, this is a test for signing :)
+
+    Timestamp: ${timestamp}
+    Random nonce: ${Math.floor(Math.random() * 1e16).toString(36) + Date.now().toString(36)}
+  `;
+  return new Response(JSON.stringify({ message }), { status: 200 });
+};
